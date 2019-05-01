@@ -1,7 +1,7 @@
 const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
 
-const PROTO_PATH = __dirname + '/bank.proto'
+const PROTO_PATH = '../Utils/bank.proto'
 
 const packageDefinition = protoLoader.loadSync(
   PROTO_PATH,
@@ -16,16 +16,16 @@ const packageDefinition = protoLoader.loadSync(
 const bank_proto = grpc.loadPackageDefinition(packageDefinition).bank
 
 const main = () => {
-  const client = new bank_proto.Greeter('localhost:8080', grpc.credentials.createInsecure())
-  let user
-  if (process.argv.length >= 3) {
-    user = process.argv[2]
-  } else {
-    user = 'world'
-  }
+  const client = new bank_proto.CurrencyService('localhost:8080', grpc.credentials.createInsecure())
 
-  client.sayHello({name: user}, (err, response) => {
-    console.log('Greeting:', response.message)
+  const call = client.getCurrency({currency: ['EURO', 'USD']})
+
+  call.on('data', (currencyTable) => {
+    console.log(currencyTable)
+  })
+
+  call.on('end', () => {
+    console.log('End')
   })
 }
 

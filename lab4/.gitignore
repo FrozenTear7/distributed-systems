@@ -1,3 +1,6 @@
-./Service/node_modules
-./Service/package-lock.json
 .idea
+Bank/__pycache__/
+Bank/bank_pb2.py
+Bank/bank_pb2_grpc.py
+Service/node_modules/
+Service/package-lock.json

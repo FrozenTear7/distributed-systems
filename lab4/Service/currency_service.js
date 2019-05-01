@@ -3,17 +3,16 @@ const protoLoader = require('@grpc/proto-loader')
 const currency = require('../Utils/currency')
 const parallel = require('run-parallel')
 
-const PROTO_PATH = '../Utils/bank.proto'
+const PROTO_PATH = '../Bank/bank.proto'
 
-const packageDefinition = protoLoader.loadSync(
-  PROTO_PATH,
-  {
+const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,
     longs: String,
     enums: String,
     defaults: true,
     oneofs: true,
-  })
+    },
+)
 
 const bank_proto = grpc.loadPackageDefinition(packageDefinition).bank
 

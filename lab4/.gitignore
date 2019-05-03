@@ -4,3 +4,6 @@ bank_pb2.py
 bank_pb2_grpc.py
 Service/node_modules/
 Service/package-lock.json
+Bank/Demo/
+Bank/bank_ice.py
+Utils/__pycache__/

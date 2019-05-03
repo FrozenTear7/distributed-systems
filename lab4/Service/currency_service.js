@@ -6,7 +6,7 @@ const {Subject} = require('await-notify')
 
 const currencySubject = new Subject()
 
-const PROTO_PATH = '../Bank/bank.proto'
+const PROTO_PATH = '../Utils/bank.proto'
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,

@@ -1,5 +1,7 @@
-import grpc
 import json
+import sys
+
+import grpc
 
 import bank_pb2
 import bank_pb2_grpc
@@ -13,7 +15,7 @@ currencyPath = '../Utils/currency.json'
 def currencyService():
     with grpc.insecure_channel('localhost:8080') as channel:
         stub = bank_pb2_grpc.CurrencyServiceStub(channel)
-        call = stub.getCurrency(bank_pb2.CurrencyRequest(currency=['EURO', 'USD']))
+        call = stub.getCurrency(bank_pb2.CurrencyRequest(currency=sys.argv[1:]))
 
         for response in call:
             newCurrencyTable = []

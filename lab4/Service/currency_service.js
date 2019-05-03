@@ -2,6 +2,9 @@ const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
 const currency = require('../Utils/currency')
 const parallel = require('run-parallel')
+const {Subject} = require('await-notify')
+
+const currencySubject = new Subject()
 
 const PROTO_PATH = '../Bank/bank.proto'
 
@@ -11,7 +14,7 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     enums: String,
     defaults: true,
     oneofs: true,
-    },
+  },
 )
 
 const bank_proto = grpc.loadPackageDefinition(packageDefinition).bank
@@ -37,6 +40,8 @@ const simulateChanges = async () => {
         value: currency.value + ((Math.random() < 0.5 ? -1 : 1) * currency.value * Math.random() * 0.025),
       }
     })
+
+    currencySubject.notifyAll()
   }
 }
 
@@ -46,13 +51,12 @@ const getCurrency = async (call) => {
 
     call.request.currency.forEach(reqCurrency => {
       const currencyValue = currencyTable.find(currency => currency.type === reqCurrency).value
-      console.log('Request for: ' + reqCurrency + ': ' + currencyValue)
       resCurrencyTable = [...resCurrencyTable, {currency: reqCurrency, value: currencyValue}]
     })
 
     call.write({currencyTable: resCurrencyTable})
 
-    await sleep(2000)
+    await currencySubject.wait()
   }
 }
 

@@ -10,8 +10,6 @@ import Bank
 import bank_pb2
 import bank_pb2_grpc
 
-Ice.loadSlice('bank.ice')
-
 currencyNames = []
 currencyTable = []
 accounts = []

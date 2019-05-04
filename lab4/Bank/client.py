@@ -4,8 +4,6 @@ import Ice
 
 import Bank
 
-Ice.loadSlice('bank.ice')
-
 
 def getFromEnum(currency):
     if currency == 'PLN':

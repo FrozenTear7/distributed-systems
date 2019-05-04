@@ -66,9 +66,9 @@ if 'Currency' not in _M_Bank.__dict__:
     _M_Bank.Currency = Currency
     del Currency
 
-if 'AccountData' not in _M_Bank.__dict__:
-    _M_Bank.AccountData = Ice.createTempClass()
-    class AccountData(object):
+if 'Account' not in _M_Bank.__dict__:
+    _M_Bank.Account = Ice.createTempClass()
+    class Account(object):
         def __init__(self, pesel=0, name='', surname='', income=0, type=_M_Bank.AccountType.STANDARD, password=''):
             self.pesel = pesel
             self.name = name
@@ -90,7 +90,7 @@ if 'AccountData' not in _M_Bank.__dict__:
         def __compare(self, other):
             if other is None:
                 return 1
-            elif not isinstance(other, _M_Bank.AccountData):
+            elif not isinstance(other, _M_Bank.Account):
                 return NotImplemented
             else:
                 if self.pesel is None or other.pesel is None:
@@ -186,11 +186,11 @@ if 'AccountData' not in _M_Bank.__dict__:
                 return r != 0
 
         def __str__(self):
-            return IcePy.stringify(self, _M_Bank._t_AccountData)
+            return IcePy.stringify(self, _M_Bank._t_Account)
 
         __repr__ = __str__
 
-    _M_Bank._t_AccountData = IcePy.defineStruct('::Bank::AccountData', AccountData, (), (
+    _M_Bank._t_Account = IcePy.defineStruct('::Bank::Account', Account, (), (
         ('pesel', (), IcePy._t_int),
         ('name', (), IcePy._t_string),
         ('surname', (), IcePy._t_string),
@@ -199,8 +199,8 @@ if 'AccountData' not in _M_Bank.__dict__:
         ('password', (), IcePy._t_string)
     ))
 
-    _M_Bank.AccountData = AccountData
-    del AccountData
+    _M_Bank.Account = Account
+    del Account
 
 if 'LoanRates' not in _M_Bank.__dict__:
     _M_Bank.LoanRates = Ice.createTempClass()
@@ -256,64 +256,79 @@ if 'AccountException' not in _M_Bank.__dict__:
     _M_Bank.AccountException = AccountException
     del AccountException
 
-_M_Bank._t_Account = IcePy.defineValue('::Bank::Account', Ice.Value, -1, (), False, True, None, ())
+_M_Bank._t_BankHandler = IcePy.defineValue('::Bank::BankHandler', Ice.Value, -1, (), False, True, None, ())
 
-if 'AccountPrx' not in _M_Bank.__dict__:
-    _M_Bank.AccountPrx = Ice.createTempClass()
-    class AccountPrx(Ice.ObjectPrx):
+if 'BankHandlerPrx' not in _M_Bank.__dict__:
+    _M_Bank.BankHandlerPrx = Ice.createTempClass()
+    class BankHandlerPrx(Ice.ObjectPrx):
+
+        def signUp(self, pesel, name, surname, income, context=None):
+            return _M_Bank.BankHandler._op_signUp.invoke(self, ((pesel, name, surname, income), context))
+
+        def signUpAsync(self, pesel, name, surname, income, context=None):
+            return _M_Bank.BankHandler._op_signUp.invokeAsync(self, ((pesel, name, surname, income), context))
+
+        def begin_signUp(self, pesel, name, surname, income, _response=None, _ex=None, _sent=None, context=None):
+            return _M_Bank.BankHandler._op_signUp.begin(self, ((pesel, name, surname, income), _response, _ex, _sent, context))
+
+        def end_signUp(self, _r):
+            return _M_Bank.BankHandler._op_signUp.end(self, _r)
 
         def getState(self, context=None):
-            return _M_Bank.Account._op_getState.invoke(self, ((), context))
+            return _M_Bank.BankHandler._op_getState.invoke(self, ((), context))
 
         def getStateAsync(self, context=None):
-            return _M_Bank.Account._op_getState.invokeAsync(self, ((), context))
+            return _M_Bank.BankHandler._op_getState.invokeAsync(self, ((), context))
 
         def begin_getState(self, _response=None, _ex=None, _sent=None, context=None):
-            return _M_Bank.Account._op_getState.begin(self, ((), _response, _ex, _sent, context))
+            return _M_Bank.BankHandler._op_getState.begin(self, ((), _response, _ex, _sent, context))
 
         def end_getState(self, _r):
-            return _M_Bank.Account._op_getState.end(self, _r)
+            return _M_Bank.BankHandler._op_getState.end(self, _r)
 
         def requestLoan(self, currency, loanAmount, months, context=None):
-            return _M_Bank.Account._op_requestLoan.invoke(self, ((currency, loanAmount, months), context))
+            return _M_Bank.BankHandler._op_requestLoan.invoke(self, ((currency, loanAmount, months), context))
 
         def requestLoanAsync(self, currency, loanAmount, months, context=None):
-            return _M_Bank.Account._op_requestLoan.invokeAsync(self, ((currency, loanAmount, months), context))
+            return _M_Bank.BankHandler._op_requestLoan.invokeAsync(self, ((currency, loanAmount, months), context))
 
         def begin_requestLoan(self, currency, loanAmount, months, _response=None, _ex=None, _sent=None, context=None):
-            return _M_Bank.Account._op_requestLoan.begin(self, ((currency, loanAmount, months), _response, _ex, _sent, context))
+            return _M_Bank.BankHandler._op_requestLoan.begin(self, ((currency, loanAmount, months), _response, _ex, _sent, context))
 
         def end_requestLoan(self, _r):
-            return _M_Bank.Account._op_requestLoan.end(self, _r)
+            return _M_Bank.BankHandler._op_requestLoan.end(self, _r)
 
         @staticmethod
         def checkedCast(proxy, facetOrContext=None, context=None):
-            return _M_Bank.AccountPrx.ice_checkedCast(proxy, '::Bank::Account', facetOrContext, context)
+            return _M_Bank.BankHandlerPrx.ice_checkedCast(proxy, '::Bank::BankHandler', facetOrContext, context)
 
         @staticmethod
         def uncheckedCast(proxy, facet=None):
-            return _M_Bank.AccountPrx.ice_uncheckedCast(proxy, facet)
+            return _M_Bank.BankHandlerPrx.ice_uncheckedCast(proxy, facet)
 
         @staticmethod
         def ice_staticId():
-            return '::Bank::Account'
-    _M_Bank._t_AccountPrx = IcePy.defineProxy('::Bank::Account', AccountPrx)
+            return '::Bank::BankHandler'
+    _M_Bank._t_BankHandlerPrx = IcePy.defineProxy('::Bank::BankHandler', BankHandlerPrx)
 
-    _M_Bank.AccountPrx = AccountPrx
-    del AccountPrx
+    _M_Bank.BankHandlerPrx = BankHandlerPrx
+    del BankHandlerPrx
 
-    _M_Bank.Account = Ice.createTempClass()
-    class Account(Ice.Object):
+    _M_Bank.BankHandler = Ice.createTempClass()
+    class BankHandler(Ice.Object):
 
         def ice_ids(self, current=None):
-            return ('::Bank::Account', '::Ice::Object')
+            return ('::Bank::BankHandler', '::Ice::Object')
 
         def ice_id(self, current=None):
-            return '::Bank::Account'
+            return '::Bank::BankHandler'
 
         @staticmethod
         def ice_staticId():
-            return '::Bank::Account'
+            return '::Bank::BankHandler'
+
+        def signUp(self, pesel, name, surname, income, current=None):
+            raise NotImplementedError("servant method 'signUp' not implemented")
 
         def getState(self, current=None):
             raise NotImplementedError("servant method 'getState' not implemented")
@@ -322,96 +337,18 @@ if 'AccountPrx' not in _M_Bank.__dict__:
             raise NotImplementedError("servant method 'requestLoan' not implemented")
 
         def __str__(self):
-            return IcePy.stringify(self, _M_Bank._t_AccountDisp)
+            return IcePy.stringify(self, _M_Bank._t_BankHandlerDisp)
 
         __repr__ = __str__
 
-    _M_Bank._t_AccountDisp = IcePy.defineClass('::Bank::Account', Account, (), None, ())
-    Account._ice_type = _M_Bank._t_AccountDisp
+    _M_Bank._t_BankHandlerDisp = IcePy.defineClass('::Bank::BankHandler', BankHandler, (), None, ())
+    BankHandler._ice_type = _M_Bank._t_BankHandlerDisp
 
-    Account._op_getState = IcePy.Operation('getState', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), _M_Bank._t_AccountData, False, 0), ())
-    Account._op_requestLoan = IcePy.Operation('requestLoan', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), _M_Bank._t_Currency, False, 0), ((), IcePy._t_float, False, 0), ((), IcePy._t_int, False, 0)), (), ((), _M_Bank._t_LoanRates, False, 0), (_M_Bank._t_AccountException,))
+    BankHandler._op_signUp = IcePy.Operation('signUp', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_long, False, 0), ((), IcePy._t_string, False, 0), ((), IcePy._t_string, False, 0), ((), IcePy._t_int, False, 0)), (), ((), IcePy._t_string, False, 0), (_M_Bank._t_AccountException,))
+    BankHandler._op_getState = IcePy.Operation('getState', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), _M_Bank._t_Account, False, 0), (_M_Bank._t_AccountException,))
+    BankHandler._op_requestLoan = IcePy.Operation('requestLoan', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), _M_Bank._t_Currency, False, 0), ((), IcePy._t_float, False, 0), ((), IcePy._t_int, False, 0)), (), ((), _M_Bank._t_LoanRates, False, 0), (_M_Bank._t_AccountException,))
 
-    _M_Bank.Account = Account
-    del Account
-
-_M_Bank._t_AccountFactory = IcePy.defineValue('::Bank::AccountFactory', Ice.Value, -1, (), False, True, None, ())
-
-if 'AccountFactoryPrx' not in _M_Bank.__dict__:
-    _M_Bank.AccountFactoryPrx = Ice.createTempClass()
-    class AccountFactoryPrx(Ice.ObjectPrx):
-
-        def signUp(self, pesel, name, surname, income, context=None):
-            return _M_Bank.AccountFactory._op_signUp.invoke(self, ((pesel, name, surname, income), context))
-
-        def signUpAsync(self, pesel, name, surname, income, context=None):
-            return _M_Bank.AccountFactory._op_signUp.invokeAsync(self, ((pesel, name, surname, income), context))
-
-        def begin_signUp(self, pesel, name, surname, income, _response=None, _ex=None, _sent=None, context=None):
-            return _M_Bank.AccountFactory._op_signUp.begin(self, ((pesel, name, surname, income), _response, _ex, _sent, context))
-
-        def end_signUp(self, _r):
-            return _M_Bank.AccountFactory._op_signUp.end(self, _r)
-
-        def signIn(self, pesel, password, context=None):
-            return _M_Bank.AccountFactory._op_signIn.invoke(self, ((pesel, password), context))
-
-        def signInAsync(self, pesel, password, context=None):
-            return _M_Bank.AccountFactory._op_signIn.invokeAsync(self, ((pesel, password), context))
-
-        def begin_signIn(self, pesel, password, _response=None, _ex=None, _sent=None, context=None):
-            return _M_Bank.AccountFactory._op_signIn.begin(self, ((pesel, password), _response, _ex, _sent, context))
-
-        def end_signIn(self, _r):
-            return _M_Bank.AccountFactory._op_signIn.end(self, _r)
-
-        @staticmethod
-        def checkedCast(proxy, facetOrContext=None, context=None):
-            return _M_Bank.AccountFactoryPrx.ice_checkedCast(proxy, '::Bank::AccountFactory', facetOrContext, context)
-
-        @staticmethod
-        def uncheckedCast(proxy, facet=None):
-            return _M_Bank.AccountFactoryPrx.ice_uncheckedCast(proxy, facet)
-
-        @staticmethod
-        def ice_staticId():
-            return '::Bank::AccountFactory'
-    _M_Bank._t_AccountFactoryPrx = IcePy.defineProxy('::Bank::AccountFactory', AccountFactoryPrx)
-
-    _M_Bank.AccountFactoryPrx = AccountFactoryPrx
-    del AccountFactoryPrx
-
-    _M_Bank.AccountFactory = Ice.createTempClass()
-    class AccountFactory(Ice.Object):
-
-        def ice_ids(self, current=None):
-            return ('::Bank::AccountFactory', '::Ice::Object')
-
-        def ice_id(self, current=None):
-            return '::Bank::AccountFactory'
-
-        @staticmethod
-        def ice_staticId():
-            return '::Bank::AccountFactory'
-
-        def signUp(self, pesel, name, surname, income, current=None):
-            raise NotImplementedError("servant method 'signUp' not implemented")
-
-        def signIn(self, pesel, password, current=None):
-            raise NotImplementedError("servant method 'signIn' not implemented")
-
-        def __str__(self):
-            return IcePy.stringify(self, _M_Bank._t_AccountFactoryDisp)
-
-        __repr__ = __str__
-
-    _M_Bank._t_AccountFactoryDisp = IcePy.defineClass('::Bank::AccountFactory', AccountFactory, (), None, ())
-    AccountFactory._ice_type = _M_Bank._t_AccountFactoryDisp
-
-    AccountFactory._op_signUp = IcePy.Operation('signUp', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_long, False, 0), ((), IcePy._t_string, False, 0), ((), IcePy._t_string, False, 0), ((), IcePy._t_int, False, 0)), (), ((), IcePy._t_string, False, 0), (_M_Bank._t_AccountException,))
-    AccountFactory._op_signIn = IcePy.Operation('signIn', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_long, False, 0), ((), IcePy._t_string, False, 0)), (), ((), _M_Bank._t_AccountPrx, False, 0), (_M_Bank._t_AccountException,))
-
-    _M_Bank.AccountFactory = AccountFactory
-    del AccountFactory
+    _M_Bank.BankHandler = BankHandler
+    del BankHandler
 
 # End of module Bank

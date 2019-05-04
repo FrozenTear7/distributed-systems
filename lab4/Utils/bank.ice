@@ -3,7 +3,7 @@ module Bank {
 
     enum Currency { PLN, USD, EURO };
 
-    struct AccountData {
+    struct Account {
         int pesel;
         string name;
         string surname;
@@ -21,13 +21,9 @@ module Bank {
         string message;
     };
 
-    interface Account {
-        AccountData getState();
-        LoanRates requestLoan(Currency currency, float loanAmount, int months) throws AccountException;
-    };
-
-    interface AccountFactory {
+    interface BankHandler {
         string signUp(long pesel, string name, string surname, int income) throws AccountException;
-        Account *signIn(long pesel, string password) throws AccountException;
+        Account getState() throws AccountException;
+        LoanRates requestLoan(Currency currency, float loanAmount, int months) throws AccountException;
     };
 };

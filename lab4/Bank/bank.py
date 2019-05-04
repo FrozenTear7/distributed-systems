@@ -24,57 +24,57 @@ def getNewPassword():
     return 'admin' + str(randint(0, 9)) + str(randint(0, 9))
 
 
-class AccountI(Bank.Account):
-    def __init__(self, pesel, name, surname, income):
-        self.pesel = pesel
-        self.name = name
-        self.surname = surname
-        self.income = income
-        self.type = Bank.AccountType.PREMIUM if income >= premiumThreshold else Bank.AccountType.STANDARD
-        self.password = getNewPassword()
-
-    def getPesel(self):
-        return self.pesel
-
-    def getPassword(self):
-        return self.password
-
-    def getState(self, current=None):
-        print('Account state requested by: ' + str(self.pesel))
-        return Bank.AccountData(self.pesel, self.name, self.surname, self.income, self.type, self.password)
-
-    def requestLoan(self, currency, loanAmount, months, current=None):
-        print('Login requested by: ' + str(self.pesel))
-        if self.type == Bank.AccountType.STANDARD:
-            raise Bank.AccountException('Requesting a loan requires a PREMIUM account!')
+def checkSignIn(pesel, password):
+    for account in accounts:
+        if pesel == account.pesel and password == account.password:
+            return account
         else:
-            try:
-                foreignCurrencyValue = next(
-                    currencyIter['value'] for currencyIter in currencyTable if currencyIter['type'] == currency.name
-                )
-                return Bank.LoanRates(loanAmount * loanInterest, loanAmount * loanInterest * foreignCurrencyValue)
-            except StopIteration:
-                raise Bank.AccountException('Please provide a valid currency!')
+            return False
 
 
-class AccountFactoryI(Bank.AccountFactory):
+class BankHandlerI(Bank.BankHandler):
     def signUp(self, pesel, name, surname, income, current=None):
         print('Registration requested by: ' + str(pesel))
-        if any([pesel == account.getPesel() for account in accounts]):
+        if any([pesel == account.pesel for account in accounts]):
             raise Bank.AccountException('Already signed up!')
 
-        account = AccountI(pesel, name, surname, income)
+        account = Bank.Account(pesel, name, surname, income,
+                               Bank.AccountType.PREMIUM if income >= premiumThreshold else Bank.AccountType.STANDARD,
+                               getNewPassword())
         accounts.append(account)
 
-        return account.getPassword()
+        return account.password
 
-    def signIn(self, pesel, password, current=None):
-        print('Login requested by: ' + str(pesel))
-        for account in accounts:
-            if pesel == account.getPesel() and password == account.getPassword():
-                return Bank.AccountPrx.uncheckedCast(current.adapter.addWithUUID(account))
-            else:
+    def getState(self, current=None):
+        print('Account state requested by: ' + current.ctx['pesel'])
+
+        try:
+            account = checkSignIn(int(current.ctx['pesel']), current.ctx['password'])
+            if not account:
                 raise Bank.AccountException('Please provide correct login info')
+            else:
+                return Bank.Account(account.pesel, account.name, account.surname, account.income, account.type, account.password)
+        except ValueError:
+                raise Bank.AccountException('Please provide correct arguments')
+
+    def requestLoan(self, currency, loanAmount, months, current=None):
+        print('Login requested by: ' + current.ctx['pesel'])
+
+        account = checkSignIn(int(current.ctx['pesel']), current.ctx['password'])
+
+        if not account:
+            raise Bank.AccountException('Please provide correct login info')
+        else:
+            if account.type == Bank.AccountType.STANDARD:
+                raise Bank.AccountException('Requesting a loan requires a PREMIUM account!')
+            else:
+                try:
+                    foreignCurrencyValue = next(
+                        currencyIter['value'] for currencyIter in currencyTable if currencyIter['type'] == currency.name
+                    )
+                    return Bank.LoanRates(loanAmount * loanInterest, loanAmount * loanInterest * foreignCurrencyValue)
+                except StopIteration:
+                    raise Bank.AccountException('Please provide a valid currency!')
 
 
 def currencyService():
@@ -95,8 +95,7 @@ def currencyService():
 def bankServer():
     communicator = Ice.initialize()
     adapter = communicator.createObjectAdapterWithEndpoints("Bank", "default -h localhost -p " + sys.argv[1])
-    # adapter.add(AccountI(), Ice.stringToIdentity("standard"))
-    adapter.add(AccountFactoryI(), Ice.stringToIdentity("factory"))
+    adapter.add(BankHandlerI(), Ice.stringToIdentity("bank"))
 
     adapter.activate()
     communicator.waitForShutdown()

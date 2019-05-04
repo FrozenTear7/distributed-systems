@@ -1,7 +1,6 @@
 import json
-from random import randint
 import sys
-import traceback
+from random import randint
 from threading import Thread
 
 import Ice
@@ -20,6 +19,7 @@ accounts = []
 currencyPath = '../Utils/currency.json'
 
 premiumThreshold = 5000
+loanInterest = 1.10
 
 
 def getNewPassword():
@@ -45,9 +45,18 @@ class AccountI(Bank.Account):
         print('Account state requested by: ' + str(self.pesel))
         return Bank.AccountData(self.pesel, self.name, self.surname, self.income, self.type, self.password)
 
-    def requestLoan(self, currency, loanAmount, current=None):
+    def requestLoan(self, currency, loanAmount, months, current=None):
         print('Login requested by: ' + str(self.pesel))
-        return True
+        if self.type == Bank.AccountType.STANDARD:
+            raise Bank.AccountException('Requesting a loan requires a PREMIUM account!')
+        else:
+            try:
+                foreignCurrencyValue = next(
+                    currencyIter['value'] for currencyIter in currencyTable if currencyIter['type'] == currency.name
+                )
+                return Bank.LoanRates(loanAmount * loanInterest, loanAmount * loanInterest * foreignCurrencyValue)
+            except StopIteration:
+                raise Bank.AccountException('Please provide a valid currency!')
 
 
 class AccountFactoryI(Bank.AccountFactory):
@@ -81,6 +90,7 @@ def currencyService():
             for currency in response.currencyTable:
                 newCurrencyTable.append({'type': currencyNames[currency.currency], 'value': currency.value})
 
+            global currencyTable
             currencyTable = newCurrencyTable
 
 

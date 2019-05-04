@@ -12,13 +12,18 @@ module Bank {
         string password;
     };
 
+    struct LoanRates {
+        float loanPayment;
+        float loanForeignPayment;
+    };
+
     exception AccountException {
         string message;
     };
 
     interface Account {
         AccountData getState();
-        bool requestLoan(Currency currency, float loanAmount) throws AccountException;
+        LoanRates requestLoan(Currency currency, float loanAmount, int months) throws AccountException;
     };
 
     interface AccountFactory {

@@ -1,12 +1,13 @@
-import Ice
 import json
+from random import randint
 import sys
 import traceback
 from threading import Thread
 
+import Ice
 import grpc
 
-import Demo
+import Bank
 import bank_pb2
 import bank_pb2_grpc
 
@@ -14,13 +15,59 @@ Ice.loadSlice('bank.ice')
 
 currencyNames = []
 currencyTable = []
+accounts = []
 
 currencyPath = '../Utils/currency.json'
 
+premiumThreshold = 5000
 
-class BankI(Demo.Hello):
-    def sayHello(self, current=None):
-        print("Hello World!")
+
+def getNewPassword():
+    return 'admin' + str(randint(0, 9)) + str(randint(0, 9))
+
+
+class AccountI(Bank.Account):
+    def __init__(self, pesel, name, surname, income):
+        self.pesel = pesel
+        self.name = name
+        self.surname = surname
+        self.income = income
+        self.type = Bank.AccountType.PREMIUM if income >= premiumThreshold else Bank.AccountType.STANDARD
+        self.password = getNewPassword()
+
+    def getPesel(self):
+        return self.pesel
+
+    def getPassword(self):
+        return self.password
+
+    def getState(self, current=None):
+        print('Account state requested by: ' + str(self.pesel))
+        return Bank.AccountData(self.pesel, self.name, self.surname, self.income, self.type, self.password)
+
+    def requestLoan(self, currency, loanAmount, current=None):
+        print('Login requested by: ' + str(self.pesel))
+        return True
+
+
+class AccountFactoryI(Bank.AccountFactory):
+    def signUp(self, pesel, name, surname, income, current=None):
+        print('Registration requested by: ' + str(pesel))
+        if any([pesel == account.getPesel() for account in accounts]):
+            raise Bank.AccountException('Already signed up!')
+
+        account = AccountI(pesel, name, surname, income)
+        accounts.append(account)
+
+        return account.getPassword()
+
+    def signIn(self, pesel, password, current=None):
+        print('Login requested by: ' + str(pesel))
+        for account in accounts:
+            if pesel == account.getPesel() and password == account.getPassword():
+                return Bank.AccountPrx.uncheckedCast(current.adapter.addWithUUID(account))
+            else:
+                raise Bank.AccountException('Please provide correct login info')
 
 
 def currencyService():
@@ -35,20 +82,16 @@ def currencyService():
                 newCurrencyTable.append({'type': currencyNames[currency.currency], 'value': currency.value})
 
             currencyTable = newCurrencyTable
-            print(currencyTable)
 
 
 def bankServer():
-    try:
-        communicator = Ice.initialize()
-        adapter = communicator.createObjectAdapterWithEndpoints("Bank", "default -h localhost -p " + sys.argv[1])
-        adapter.add(BankI(), communicator.stringToIdentity("bank"))
-        adapter.activate()
-        communicator.waitForShutdown()
-        communicator.destroy()
-    except:
-        traceback.print_exc()
-        sys.exit(1)
+    communicator = Ice.initialize()
+    adapter = communicator.createObjectAdapterWithEndpoints("Bank", "default -h localhost -p " + sys.argv[1])
+    # adapter.add(AccountI(), Ice.stringToIdentity("standard"))
+    adapter.add(AccountFactoryI(), Ice.stringToIdentity("factory"))
+
+    adapter.activate()
+    communicator.waitForShutdown()
 
 
 if __name__ == '__main__':

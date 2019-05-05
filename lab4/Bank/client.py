@@ -80,7 +80,7 @@ def clientInterface(bank):
             try:
                 currency = getFromEnum(currency)
                 loan = bank.requestLoan(currency, loanAmount, months, context={'pesel': pesel, 'password': password})
-                print('Loan rate: {0}, {1} rate: {2}'.format(loan.loanPayment, Bank.Currency.EURO.name,
+                print('Loan rate: {0}, {1} rate: {2}'.format(loan.loanPayment, currency,
                                                              loan.loanForeignPayment))
             except Bank.AccountException as e:
                 print(e.message)

@@ -28,8 +28,8 @@ def checkSignIn(pesel, password):
     for account in accounts:
         if pesel == account.pesel and password == account.password:
             return account
-        else:
-            return False
+
+    return False
 
 
 class BankHandlerI(Bank.BankHandler):

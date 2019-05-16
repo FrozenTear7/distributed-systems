@@ -7,6 +7,8 @@
     "google-protobuf": "^3.0.0",
     "grpc": "^1.11.0",
     "lodash": "^4.6.1",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "run-parallel": "^1.1.9",
+    "await-notify": "^1.0.1"
   }
 }

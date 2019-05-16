@@ -1,0 +1,14 @@
+.idea/
+node_modules/
+package-lock.json
+
+lab1/cmake-build-debug/
+
+lab2/out/
+lab2/rozprochy-lab2.iml
+
+lab3/RabbitMQLab.iml
+lab3/out/
+
+lab4/Bank/__pycache__/
+lab4/Utils/__pycache__/

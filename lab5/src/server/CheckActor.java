@@ -3,6 +3,8 @@ package server;
 import akka.actor.AbstractActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import utils.Request;
+import utils.Response;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,8 +18,8 @@ public class CheckActor extends AbstractActor {
     @Override
     public AbstractActor.Receive createReceive() {
         return receiveBuilder()
-                .match(String.class, s -> {
-                    String title = s.split(" ")[1];
+                .match(Request.class, req -> {
+                    String title = req.getTitle();
                     int price = -1;
 
                     BufferedReader br = new BufferedReader(new FileReader(db1));
@@ -41,7 +43,7 @@ public class CheckActor extends AbstractActor {
                         }
                     }
 
-                    getSender().tell(price, getSelf());
+                    getSender().tell(new Response(String.valueOf(price)), getSelf());
                 })
                 .matchAny(o -> log.info("received unknown message"))
                 .build();

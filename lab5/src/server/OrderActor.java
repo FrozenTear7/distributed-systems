@@ -3,6 +3,8 @@ package server;
 import akka.actor.AbstractActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import utils.Request;
+import utils.Response;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,15 +15,15 @@ public class OrderActor extends AbstractActor {
     @Override
     public AbstractActor.Receive createReceive() {
         return receiveBuilder()
-                .match(String.class, s -> {
+                .match(Request.class, req -> {
                     try {
                         FileWriter fw = new FileWriter("./orders.txt", true);
-                        fw.write(s.split(" ")[1] + "\n");
+                        fw.write(req.getTitle() + "\n");
                         fw.close();
                     } catch (IOException e) {
                         throw new IOException();
                     } finally {
-                        getSender().tell("done", getSelf());
+                        getSender().tell(new Response("Done"), getSelf());
                     }
                 })
                 .matchAny(o -> log.info("received unknown message"))

@@ -4,16 +4,16 @@ import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.pf.DeciderBuilder;
+import utils.Request;
+import utils.RequestType;
 import scala.concurrent.duration.Duration;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ServerActor extends AbstractActor {
     private final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
-//    private Map<String, ActorRef> actors = new HashMap<>();
+    //    private Map<String, ActorRef> actors = new HashMap<>();
     private ActorRef orderActor = getContext().actorOf(Props.create(OrderActor.class), "order");
     private ActorRef checkActor = getContext().actorOf(Props.create(CheckActor.class), "check");
     private ActorRef streamActor = getContext().actorOf(Props.create(StreamActor.class), "stream");
@@ -21,13 +21,13 @@ public class ServerActor extends AbstractActor {
     @Override
     public AbstractActor.Receive createReceive() {
         return receiveBuilder()
-                .match(String.class, s -> {
-                    if (s.startsWith("check")) {
-                        checkActor.tell(s, getSender());
-                    } else if (s.startsWith("order")) {
-                        orderActor.tell(s, getSender());
-                    } else if (s.startsWith("stream")) {
-                        streamActor.tell(s, getSender());
+                .match(Request.class, req -> {
+                    if (req.getType() == RequestType.CHECK) {
+                        checkActor.tell(req, getSender());
+                    } else if (req.getType() == RequestType.ORDER) {
+                        orderActor.tell(req, getSender());
+                    } else if (req.getType() == RequestType.STREAM) {
+                        streamActor.tell(req, getSender());
                     }
                 })
                 .matchAny(o -> log.info("received unknown message"))

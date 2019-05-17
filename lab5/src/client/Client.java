@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 
 public class Client {
     public static void main(String[] args) throws Exception {
-        File configFile = new File("./src/client/client.conf");
+        File configFile = new File(args[0]);
         Config config = ConfigFactory.parseFile(configFile);
 
         final ActorSystem system = ActorSystem.create("client_system", config);

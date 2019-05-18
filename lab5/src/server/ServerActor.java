@@ -10,24 +10,39 @@ import scala.concurrent.duration.Duration;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerActor extends AbstractActor {
     private final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
-    //    private Map<String, ActorRef> actors = new HashMap<>();
-    private ActorRef orderActor = getContext().actorOf(Props.create(OrderActor.class), "order");
-    private ActorRef checkActor = getContext().actorOf(Props.create(CheckActor.class), "check");
-    private ActorRef streamActor = getContext().actorOf(Props.create(StreamActor.class), "stream");
+    private Map<String, ActorRef> actors = new HashMap<>();
+    private int counter = 0;
 
     @Override
     public AbstractActor.Receive createReceive() {
         return receiveBuilder()
                 .match(Request.class, req -> {
                     if (req.getType() == RequestType.CHECK) {
-                        checkActor.tell(req, getSender());
+                        String name = String.valueOf(counter++);
+                        req.setActor(name);
+                        ActorRef newActor = getContext().actorOf(Props.create(CheckActor.class), name);
+                        actors.put(name, newActor);
+                        newActor.tell(req, getSender());
                     } else if (req.getType() == RequestType.ORDER) {
-                        orderActor.tell(req, getSender());
+                        String name = String.valueOf(counter++);
+                        req.setActor(name);
+                        ActorRef newActor = getContext().actorOf(Props.create(OrderActor.class), name);
+                        actors.put(name, newActor);
+                        newActor.tell(req, getSender());
                     } else if (req.getType() == RequestType.STREAM) {
-                        streamActor.tell(req, getSender());
+                        String name = String.valueOf(counter++);
+                        req.setActor(name);
+                        ActorRef newActor = getContext().actorOf(Props.create(StreamActor.class), name);
+                        actors.put(name, newActor);
+                        newActor.tell(req, getSender());
+                    } else if (req.getType() == RequestType.STOP) {
+                        getContext().stop(actors.get(req.getActor()));
+                        actors.remove(req.getActor());
                     }
                 })
                 .matchAny(o -> log.info("received unknown message"))

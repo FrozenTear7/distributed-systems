@@ -1,5 +1,5 @@
 package utils;
 
 public enum RequestType {
-    CHECK, ORDER, STREAM
+    CHECK, ORDER, STREAM, STOP
 }

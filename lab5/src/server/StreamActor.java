@@ -9,6 +9,7 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import utils.Request;
+import utils.RequestType;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -32,6 +33,9 @@ public class StreamActor extends AbstractActor {
 
                     } catch (IOException e) {
                         e.printStackTrace();
+                    } finally {
+                        req.setType(RequestType.STOP);
+                        getContext().parent().tell(req, null);
                     }
 
 

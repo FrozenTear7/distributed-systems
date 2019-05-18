@@ -4,6 +4,7 @@ import akka.actor.AbstractActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import utils.Request;
+import utils.RequestType;
 import utils.Response;
 
 import java.io.IOException;
@@ -23,6 +24,8 @@ public class OrderActor extends AbstractActor {
                         throw new IOException();
                     } finally {
                         getSender().tell(new Response("Done"), getSelf());
+                        req.setType(RequestType.STOP);
+                        getContext().parent().tell(req, null);
                     }
                 })
                 .matchAny(o -> log.info("received unknown message"))

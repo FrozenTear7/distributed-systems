@@ -6,14 +6,17 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
+import akka.stream.ThrottleMode;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
+import scala.concurrent.duration.Duration;
 import utils.Request;
 import utils.RequestType;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +31,7 @@ public class StreamActor extends AbstractActor {
                         final Materializer materializer = ActorMaterializer.create(getContext().getSystem());
                         Source<String, NotUsed> source = Source.from(stream.collect(Collectors.toList()));
                         source.map(String::toString)
-//                                .throttle(1, Duration.ofSeconds(1))
+                                .throttle(1, Duration.create(1, TimeUnit.SECONDS), 1, ThrottleMode.shaping())
                                 .runWith(Sink.actorRef(getSender(), "\n"), materializer);
 
                     } catch (IOException e) {

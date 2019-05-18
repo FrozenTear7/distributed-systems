@@ -9,7 +9,7 @@ import utils.Response;
 
 import java.io.IOException;
 
-import static utils.WriteOrder.writeOrder;
+import static utils.UtilFunctions.writeOrder;
 
 public class OrderActor extends AbstractActor {
     private final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);

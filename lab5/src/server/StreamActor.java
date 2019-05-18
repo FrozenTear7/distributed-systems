@@ -40,8 +40,6 @@ public class StreamActor extends AbstractActor {
                         req.setType(RequestType.STOP);
                         getContext().parent().tell(req, null);
                     }
-
-
                 })
                 .matchAny(o -> log.info("received unknown message"))
                 .build();

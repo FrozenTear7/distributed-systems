@@ -10,6 +10,7 @@ import scala.concurrent.duration.Duration;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,8 +51,8 @@ public class ServerActor extends AbstractActor {
     }
 
     private static SupervisorStrategy strategy = new OneForOneStrategy(10, Duration.create("1 minute"),
-            DeciderBuilder.match(FileNotFoundException.class, e -> SupervisorStrategy.escalate())
-                    .match(IOException.class, e -> SupervisorStrategy.restart())
+            DeciderBuilder
+                    .match(NoSuchFileException.class, e -> SupervisorStrategy.resume())
                     .matchAny(o -> SupervisorStrategy.restart())
                     .build());
 

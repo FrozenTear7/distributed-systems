@@ -24,7 +24,7 @@ public class StreamActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(Request.class, req -> {
-                    try (Stream<String> stream = Files.lines(Paths.get(String.format("./src/bookstore/%s.txt", req.getTitle())))) {
+                    try (Stream<String> stream = Files.lines(Paths.get("./src/bookstore/" + req.getTitle() + ".txt"))) {
                         final Materializer materializer = ActorMaterializer.create(getContext().getSystem());
                         Source<String, NotUsed> source = Source.from(stream.collect(Collectors.toList()));
                         source.map(String::toString)

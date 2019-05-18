@@ -13,7 +13,7 @@ public class UtilFunctions {
         }
     }
 
-    public static synchronized int checkBook(String title, int db) throws IOException, InterruptedException {
+    static synchronized int checkBook(String title, int db) throws IOException {
         int price = -1;
 
         File db1 = new File("./src/bookstore/database1.txt");
@@ -32,8 +32,6 @@ public class UtilFunctions {
                 break;
             }
         }
-
-        Thread.sleep(10000);
 
         return price;
     }

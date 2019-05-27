@@ -1,0 +1,11 @@
+book1 10
+book2 12
+book3 31
+book4 51
+book8 25
+book9 73
+book10 21
+book12 27
+book13 53
+book16 66
+book20 90

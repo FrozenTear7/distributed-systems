@@ -1,5 +1,6 @@
 const zookeeper = require('node-zookeeper-client')
 const readline = require('readline')
+const {exec} = require('child_process')
 
 const client = zookeeper.createClient('localhost:2181')
 
@@ -16,7 +17,8 @@ const setEpicj = () => {
         path,
         (event) => {
             if (event.getName() === 'NODE_CREATED') {
-                console.log('OTWIERAM SKRYPT JAK SZEFUNIO')
+                exec('calc', () => {
+                })
                 setEpicj2()
             }
         },
@@ -34,7 +36,6 @@ const setEpicj2 = () => {
             if (event.getName() === 'NODE_CHILDREN_CHANGED') {
                 showNodes()
                 setEpicj2()
-                // setWatcher3()
             }
         },
         () => {
@@ -49,9 +50,9 @@ const setWatcher1 = () => {
         path,
         (event) => {
             if (event.getName() === 'NODE_CREATED') {
-                console.log('OTWIERAM SKRYPT JAK SZEFUNIO')
+                exec('calc', () => {
+                })
                 setWatcher2()
-                // setWatcher3()
             }
         },
         () => {
@@ -67,24 +68,6 @@ const setWatcher2 = () => {
         (event) => {
             if (event.getName() === 'NODE_CHILDREN_CHANGED') {
                 showNodes()
-                setWatcher1()
-                setWatcher2()
-                // setWatcher3()
-            }
-        },
-        () => {
-        },
-    )
-}
-
-const setWatcher3 = () => {
-    const path = '/z'
-
-    client.getChildren(
-        path,
-        (event) => {
-            if (event.getName() === 'NODE_DELETED') {
-                console.log('ZAMYKAM SKRYPT JAK SZEFUNIO')
                 setWatcher1()
                 setWatcher2()
             }
@@ -129,7 +112,8 @@ const removeZNode = () => {
         (event) => {
             setEpicj()
             if (event.getName() === 'NODE_DELETED') {
-                console.log('ZAMYKAM SKRYPT JAK SZEFUNIOo')
+                exec('taskkill /f /im calculator.exe', () => {
+                })
             }
         },
         () => {

@@ -2,7 +2,7 @@ const zookeeper = require('node-zookeeper-client')
 const readline = require('readline')
 const {exec} = require('child_process')
 
-const client = zookeeper.createClient('localhost:2181')
+const client = zookeeper.createClient('localhost:2181,locahost:2182,localhost:2183')
 
 const rl = readline.createInterface({
     input: process.stdin,

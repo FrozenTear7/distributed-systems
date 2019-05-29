@@ -9,6 +9,39 @@ const rl = readline.createInterface({
     terminal: false,
 })
 
+const setEpicj = () => {
+    const path = '/z'
+
+    client.exists(
+        path,
+        (event) => {
+            if (event.getName() === 'NODE_CREATED') {
+                console.log('OTWIERAM SKRYPT JAK SZEFUNIO')
+                setEpicj2()
+            }
+        },
+        () => {
+        },
+    )
+}
+
+const setEpicj2 = () => {
+    const path = '/z'
+
+    client.getChildren(
+        path,
+        (event) => {
+            if (event.getName() === 'NODE_CHILDREN_CHANGED') {
+                showNodes()
+                setEpicj2()
+                // setWatcher3()
+            }
+        },
+        () => {
+        },
+    )
+}
+
 const setWatcher1 = () => {
     const path = '/z'
 
@@ -17,9 +50,8 @@ const setWatcher1 = () => {
         (event) => {
             if (event.getName() === 'NODE_CREATED') {
                 console.log('OTWIERAM SKRYPT JAK SZEFUNIO')
-                setWatcher1()
                 setWatcher2()
-                setWatcher3()
+                // setWatcher3()
             }
         },
         () => {
@@ -37,7 +69,7 @@ const setWatcher2 = () => {
                 showNodes()
                 setWatcher1()
                 setWatcher2()
-                setWatcher3()
+                // setWatcher3()
             }
         },
         () => {
@@ -95,9 +127,10 @@ const removeZNode = () => {
     client.exists(
         path,
         (event) => {
-            // if (event.getName() === 'NODE_DELETED') {
-            //     console.log('ZAMYKAM SKRYPT JAK SZEFUNIO')
-            // }
+            setEpicj()
+            if (event.getName() === 'NODE_DELETED') {
+                console.log('ZAMYKAM SKRYPT JAK SZEFUNIOo')
+            }
         },
         () => {
             client.getChildren(path,

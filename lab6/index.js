@@ -16,107 +16,45 @@ const setWatcher1 = () => {
         path,
         (event) => {
             if (event.getName() === 'NODE_CREATED') {
-                console.log('_______________________________________')
-                setWatchers()
+                console.log('OTWIERAM SKRYPT JAK SZEFUNIO')
+                setWatcher1()
+                setWatcher2()
+                setWatcher3()
             }
         },
         () => {
         },
     )
 }
-
 
 const setWatcher2 = () => {
     const path = '/z'
 
-    client.exists(
-        path,
-        (event) => {
-            if (event.getName() === 'NODE_CREATED') {
-                console.log('_______________________________________')
-                setWatchers()
-            }
-        },
-        () => {
-        },
-    )
-
     client.getChildren(
         path,
         (event) => {
             if (event.getName() === 'NODE_CHILDREN_CHANGED') {
-                setWatchers()
                 showNodes()
-            }
-            else if (event.getName() === 'NODE_DELETED') {
-                console.log('++++++++++++++++++++++++++++++++++++++++++')
-                setWatchers()
+                setWatcher1()
+                setWatcher2()
+                setWatcher3()
             }
         },
         () => {
         },
     )
 }
-
 
 const setWatcher3 = () => {
     const path = '/z'
 
-    client.exists(
-        path,
-        (event) => {
-            if (event.getName() === 'NODE_CREATED') {
-                console.log('_______________________________________')
-                setWatchers()
-            }
-        },
-        () => {
-        },
-    )
-
     client.getChildren(
         path,
         (event) => {
-            if (event.getName() === 'NODE_CHILDREN_CHANGED') {
-                setWatchers()
-                showNodes()
-            }
-            else if (event.getName() === 'NODE_DELETED') {
-                console.log('++++++++++++++++++++++++++++++++++++++++++')
-                setWatchers()
-            }
-        },
-        () => {
-        },
-    )
-}
-
-
-const setWatchers = () => {
-    const path = '/z'
-
-    client.exists(
-        path,
-        (event) => {
-            if (event.getName() === 'NODE_CREATED') {
-                console.log('_______________________________________')
-                setWatchers()
-            }
-        },
-        () => {
-        },
-    )
-
-    client.getChildren(
-        path,
-        (event) => {
-            if (event.getName() === 'NODE_CHILDREN_CHANGED') {
-                setWatchers()
-                showNodes()
-            }
-            else if (event.getName() === 'NODE_DELETED') {
-                console.log('++++++++++++++++++++++++++++++++++++++++++')
-                setWatchers()
+            if (event.getName() === 'NODE_DELETED') {
+                console.log('ZAMYKAM SKRYPT JAK SZEFUNIO')
+                setWatcher1()
+                setWatcher2()
             }
         },
         () => {
@@ -132,8 +70,7 @@ const showNodes = () => {
         },
         (error, children) => {
             if (!error) {
-                console.log('%s Children: %j\n', children.length, children)
-                // setWatcher2()
+                console.log('%s Children: %j', children.length, children)
             }
         })
 }
@@ -141,26 +78,14 @@ const showNodes = () => {
 const createZNode = () => {
     const path = '/z'
 
-    client.create(path, (error) => {
-        if (error) {
-            // console.log('Node /z already exists\n')
-        } else {
-            // console.log('Node %s successfully created\n', path)
-            // setWatcher2()
-        }
+    client.create(path, () => {
     })
 }
 
 const createZChild = (childPath) => {
     const path = '/z/' + childPath
 
-    client.create(path, (error) => {
-        if (error) {
-            // console.log('Could not add %s', path)
-        } else {
-            // console.log('Node %s successfully created\n', path)
-            // setWatcher2()
-        }
+    client.create(path, () => {
     })
 }
 
@@ -170,10 +95,9 @@ const removeZNode = () => {
     client.exists(
         path,
         (event) => {
-            if (event.getName() === 'NODE_DELETED') {
-                console.log('++++++++++++++++++++++++++++++++++++++++++')
-                // setWatchers()
-            }
+            // if (event.getName() === 'NODE_DELETED') {
+            //     console.log('ZAMYKAM SKRYPT JAK SZEFUNIO')
+            // }
         },
         () => {
             client.getChildren(path,
@@ -182,20 +106,11 @@ const removeZNode = () => {
                 (error, children) => {
                     if (!error)
                         children.forEach(child => {
-                            client.remove(path + '/' + child, -1, (error) => {
-                                if (error) {
-                                    // console.log('Failed to remove node %s', path + '/' + child + '\n')
-                                }
+                            client.remove(path + '/' + child, -1, () => {
                             })
                         })
 
-                    client.remove(path, -1, (error) => {
-                        if (error) {
-                            // console.log('Node /z does not exist\n')
-                        } else {
-                            // console.log('Nodes successfully removed\n')
-                            // setWatcher1()
-                        }
+                    client.remove(path, -1, () => {
                     })
                 })
         },
@@ -204,9 +119,7 @@ const removeZNode = () => {
 
 client.once('connected', () => {
     console.log('Connected to the server.')
-    // setWatcher1()
-    // setWatcher2()
-    setWatchers()
+    setWatcher1()
     console.log(`
         1 - show 'z' tree structure
         2 - create 'z' node
